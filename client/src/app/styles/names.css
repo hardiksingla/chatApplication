@@ -1,0 +1,11 @@
+.name{
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 37vw;
+  max-width: 500px;
+}
+p{
+  margin: 0.5rem;
+}
