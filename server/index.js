@@ -6,7 +6,8 @@ const bcrypt = require('bcrypt');
 const {User,Message,Conversation} = require('./model');
 var jwt = require('jsonwebtoken');
 const { Server } = require('socket.io');
-const { createServer } = require('node:http');
+const { createServer } = require('http');
+const path = require("path");
 
 
 
@@ -22,8 +23,6 @@ app.use(bodyParser.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(express.static("public"));
 
-const server = createServer(app);
-const io = new Server(server);
 
 const corsOptions = {
   origin: "*",
@@ -32,14 +31,36 @@ const corsOptions = {
 let cors = require("cors");
 app.use(cors(corsOptions));
 
+// --------------------------deployment------------------------------
 
-app.listen(3000, function () {
+const __dirname1 = path.resolve();
+console.log(__dirname1)
+if ("production" === "production") {
+  app.use(express.static(path.join(__dirname1, "/client/dist")));
+
+  app.get("*", (req, res) =>
+    res.sendFile(path.resolve(__dirname1, "client", "dist", "index.html"))
+  );
+} else {
+  app.get("/", (req, res) => {
+    res.send("API is running..");
+  });
+}
+
+// --------------------------deployment------------------------------
+
+const server = app.listen(3000, function () {
   console.log("Server running at port 3000");
 });
 
-app.get("/", function (req, res) {
-  res.send(data)
+
+const io = require('socket.io')(server, {
+  cors: {
+    origin: '*',
+  }
+  
 });
+
 
 app.post("/api/auth/signup", async function(req,res){
 	
@@ -79,7 +100,6 @@ app.post("/api/auth/login", async function(req,res){
 })
 
 app.post("/api/search", async function(req,res){
-  console.log(req.body.search)
   const substring = req.body.search;
 
   User.find({ username: { $regex: substring, $options: 'i' } })
@@ -110,12 +130,10 @@ app.post("/api/addFriend", async function(req,res){
       members: [currentUserID.id, req.body.friendID]
     })
   }catch(err){
-    console.log(err)
     return res.json({ status: 'error', error: 'Cant Create Conversation' })
   }
   User.updateOne({ _id:req.body.friendID }, {$push:{ friends:currentUserID.id}})
   .then(result => {
-    console.log("friend added")
   })
   User.updateOne({ _id:currentUserID.id }, {$push:{ friends:req.body.friendID}})
   .then(result => {
@@ -130,7 +148,6 @@ app.post("/api/friendList", async function(req,res){
   const currentUserID = jwt.verify(req.body.currentUserID, 'secretKey');
   const user = await User.findOne({ '_id': currentUserID.id});
 
-  // console.log("get friends")
   var allfriends = []
   const friends = user.friends;
   for (let i = 0; i < friends.length; i++) {
@@ -166,14 +183,12 @@ app.post("/api/getMessages", async function(req,res){
 
 app.post("/api/sendMessage", async function(req,res){
   const from = jwt.verify(req.body.user, 'secretKey');
-  console.log(from.id)
   const query = await Conversation.find({ members: { $all: [req.body.to, from.id] } })
   if (query.length == 0) {
     return res.json({ status: 'error', error: 'No Conversation' })
   }
   const conversationID = query[0]._id;
   const message = await Message.create({conversationID: conversationID, sender: from.id, message: req.body.message})
-  console.log(conversationID)
 
 
   await Conversation.updateOne({ _id:conversationID }, {$push:{ messages:message}})
@@ -186,16 +201,10 @@ app.post("/api/sendMessage", async function(req,res){
 // socket.io->>
 
 io.on('connection', (socket) => {
-  console.log('A user connected');
+  console.log('a user connected', socket.id);
+  socket.on('message', (args) => {
+    console.log('message',args)
+    io.emit('message');
 
-  // Handle incoming messages
-  socket.on('chat message', (message) => {
-    // Broadcast the message to all connected clients
-    io.emit('chat message', message);
-  });
-
-  // Handle disconnect
-  socket.on('disconnect', () => {
-    console.log('User disconnected');
   });
 });

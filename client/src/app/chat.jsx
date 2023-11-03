@@ -1,14 +1,35 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState, useRef } from 'react'
 import './styles/chat.css'
 import { io } from "socket.io-client";
 
 function Chat({activeMessage , getMessages, messages, isLoading }){
   const [messagesInput, setMessagesInput] = useState("")
+  const [socket, setSocket] = useState(null);
 
-  useState(() => {    
-    var socket = io("http://localhost:3000");
+
+  const messagesEndRef = useRef(null);
+  const messagesListRef = useRef(null);
+
+
+  useEffect(() => {    
+    const newSocket = io('ws://localhost:3000');
+    setSocket(newSocket);
+    newSocket.on("message", () => {
+      getMessages();  
+    });
   }, []);
-  
+
+  useEffect(() => {
+    scrollToBottom();
+  }, [messages]);
+
+  const scrollToBottom = () => {
+    if (messagesListRef.current) {
+      messagesListRef.current.scrollTop = messagesListRef.current.scrollHeight;
+    }
+  };
+
+
 
 
   async function sendChat(){
@@ -27,12 +48,14 @@ function Chat({activeMessage , getMessages, messages, isLoading }){
       console.log(res)
       getMessages();
       setMessagesInput("")
+      console.log("socket" ,socket)
+      socket.emit('message', 'world');
     }
   }
   var messagesElement = <div></div>;
-  if(messages){  
-    messagesElement = messages.map(data => (
-      <li key={data.id } className={data.sender ? "sender message" : "receiver message"} >
+  if (messages) {
+    messagesElement = messages.map((data,index) => (
+      <li key={data.id} className={data.sender ? 'sender message' : 'receiver message'} ref={index === messages.length - 1 ? messagesEndRef : null}>
         <p>{data.message}</p>
       </li>
     ));
@@ -40,10 +63,9 @@ function Chat({activeMessage , getMessages, messages, isLoading }){
 
 
 
-
   return(
     <div className='chat'>
-      <ol className="messages">
+      <ol className="messages" ref={messagesListRef}>
         {messagesElement}
       </ol>
       <div className="chatInput">

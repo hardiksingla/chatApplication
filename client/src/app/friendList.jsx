@@ -2,7 +2,7 @@ import { useState , useEffect } from 'react'
 import Name from "./name.jsx"
 import "./styles/friendList.css"
 
-function FriendList({ getActiveMessage }) {
+function FriendList({ getActiveMessage,activeMessage }) {
   const [friendList, setFriendList] = useState([]);
 
   useEffect(() => {
@@ -15,14 +15,15 @@ function FriendList({ getActiveMessage }) {
 
     var res = await response.json();
     setFriendList(res.friends);
-    console.log(res);
+    // console.log(res);
     }
     getFriends();
     
   }, []);
 
   const friendListElement = friendList.map(data => (
-    <div key={data.username } onClick={() => getActiveMessage(data)}>
+    <div key={data.username} onClick={() => getActiveMessage(data)} 
+      className={data.id == activeMessage.id ? 'activeChat chatName' : 'chatName'} >
       <p>{data.name}</p>
     </div>
   ));

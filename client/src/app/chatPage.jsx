@@ -11,10 +11,12 @@ function ChatPage() {
   
   
   function GetActiveMessage(data) {
+    // console.log("GetActiveMessage")
     setActiveMessage(data);
-    getMessages();
+    // getMessages();
   }
   useEffect(() => {
+    console.log("useEffect")
     getMessages();
   }, [activeMessage]);
 
@@ -31,7 +33,7 @@ function ChatPage() {
 
   return (
       <div className="chatArea" >
-      <FriendList getActiveMessage={GetActiveMessage} />
+      <FriendList getActiveMessage={GetActiveMessage} activeMessage={activeMessage} />
       {activeMessage !=0 && <Chat activeMessage={activeMessage} getMessages={getMessages} messages={messages} isLoading={isLoading} />}
       </div>
   );
