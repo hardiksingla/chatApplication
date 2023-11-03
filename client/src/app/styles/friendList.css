@@ -1,0 +1,17 @@
+.friend-list{
+  position: relative;
+  width: 33vw;
+  height: 100vh;
+  background-color: #4a4a4a;
+}
+.chatName{
+  text-align: center;
+  background-color: #2b2929;
+  border-radius: 10px;
+  padding: 10px;
+  margin: 10px;
+}
+
+.activeChat{
+  background-color: #025b4b;
+}
