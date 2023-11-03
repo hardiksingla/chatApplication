@@ -1,23 +1,40 @@
 import React, { StrictMode, useEffect, useState, version } from 'react'
-import Split from 'react-split'
 import FriendList from './friendList'
-import FriendList2 from './test'
-import './chatapp.css'
+import AddFriendSearch from './addFriendSearch';
+import Chat from './chat'
+import './styles/chatPage.css'
 
-function ChatPage(){
+function ChatPage() {
+  const [activeMessage, setActiveMessage] = useState(0);
+  const [messages, setMessages] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
   
+  
+  function GetActiveMessage(data) {
+    setActiveMessage(data);
+    getMessages();
+  }
+  useEffect(() => {
+    getMessages();
+  }, [activeMessage]);
 
-  return(
-    <>
-    <StrictMode>
-      <div className='chatapp'>
-        <FriendList/>
-        <FriendList2/>
+  async function getMessages(){
+    const response = await fetch("http://localhost:3000/api/getMessages", 
+    {method: "POST", 
+    headers: {"Content-Type": "application/json"}, 
+    body: JSON.stringify({userJWT:localStorage.getItem("token"),friendID:activeMessage.id})})
+    var res = await response.json();
+    console.log(res)
+    setMessages(res.messages)
+    setIsLoading(false)
+  }
+
+  return (
+      <div className="chatArea" >
+      <FriendList getActiveMessage={GetActiveMessage} />
+      {activeMessage !=0 && <Chat activeMessage={activeMessage} getMessages={getMessages} messages={messages} isLoading={isLoading} />}
       </div>
-    </StrictMode>
-
-    </>
-  )
+  );
 }
 
-export default ChatPage
+export default ChatPage;

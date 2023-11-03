@@ -3,8 +3,11 @@ const app = express();
 const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
 const bcrypt = require('bcrypt');
-const User = require('./model')
+const {User,Message,Conversation} = require('./model');
 var jwt = require('jsonwebtoken');
+const { Server } = require('socket.io');
+const { createServer } = require('node:http');
+
 
 
 
@@ -12,14 +15,22 @@ main().catch(err => console.log("database error"));
 
 async function main() {
   await mongoose.connect('mongodb://127.0.0.1:27017/test');
+  console.log("connected to database")
   }
 
 app.use(bodyParser.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(express.static("public"));
 
+const server = createServer(app);
+const io = new Server(server);
+
+const corsOptions = {
+  origin: "*",
+};
+
 let cors = require("cors");
-app.use(cors());
+app.use(cors(corsOptions));
 
 
 app.listen(3000, function () {
@@ -94,7 +105,18 @@ app.post("/api/addFriend", async function(req,res){
       return res.json({ status: 'error', error: 'Already a friend' })
     }
   }
-
+  try{
+    await Conversation.create({
+      members: [currentUserID.id, req.body.friendID]
+    })
+  }catch(err){
+    console.log(err)
+    return res.json({ status: 'error', error: 'Cant Create Conversation' })
+  }
+  User.updateOne({ _id:req.body.friendID }, {$push:{ friends:currentUserID.id}})
+  .then(result => {
+    console.log("friend added")
+  })
   User.updateOne({ _id:currentUserID.id }, {$push:{ friends:req.body.friendID}})
   .then(result => {
     return res.json({ status: 'ok' })
@@ -104,13 +126,76 @@ app.post("/api/addFriend", async function(req,res){
   });
 })
 
-app.post("/api/getFriends", async function(req,res){
+app.post("/api/friendList", async function(req,res){
   const currentUserID = jwt.verify(req.body.currentUserID, 'secretKey');
   const user = await User.findOne({ '_id': currentUserID.id});
 
+  // console.log("get friends")
+  var allfriends = []
   const friends = user.friends;
   for (let i = 0; i < friends.length; i++) {
-    console.log(friends[i])
+    fr = await User.findOne({ '_id': friends[i]})
+    friend = {name: fr.name, username: fr.username,id: fr._id}
+    allfriends.push(friend)   
   }
+  res.json({ status: 'ok', friends: allfriends })
 
 })
+
+app.post("/api/getMessages", async function(req,res){
+  const currentUserID = jwt.verify(req.body.userJWT, 'secretKey');
+  const userDBId = req.body.friendID;
+  const query = await Conversation.find({ members: { $all: [userDBId, currentUserID.id] } })
+  if (query.length == 0) {
+    return res.json({ status: 'error', error: 'No Conversation' })
+  }
+  const conversation = query[0];
+  const messages = conversation.messages;
+  const messagesData = []
+  for(let i = 0; i < messages.length; i++){
+    const message = await Message.findOne({ '_id': messages[i]})
+    var isSender = false;
+    if (message.sender == currentUserID.id){
+      isSender = true;
+    }
+    messagesData.push({message: message.message, sender: isSender})
+  }
+  res.json({ status: 'ok', messages: messagesData})
+
+})
+
+app.post("/api/sendMessage", async function(req,res){
+  const from = jwt.verify(req.body.user, 'secretKey');
+  console.log(from.id)
+  const query = await Conversation.find({ members: { $all: [req.body.to, from.id] } })
+  if (query.length == 0) {
+    return res.json({ status: 'error', error: 'No Conversation' })
+  }
+  const conversationID = query[0]._id;
+  const message = await Message.create({conversationID: conversationID, sender: from.id, message: req.body.message})
+  console.log(conversationID)
+
+
+  await Conversation.updateOne({ _id:conversationID }, {$push:{ messages:message}})
+
+  res.json({ status: 'ok' })
+
+})
+
+
+// socket.io->>
+
+io.on('connection', (socket) => {
+  console.log('A user connected');
+
+  // Handle incoming messages
+  socket.on('chat message', (message) => {
+    // Broadcast the message to all connected clients
+    io.emit('chat message', message);
+  });
+
+  // Handle disconnect
+  socket.on('disconnect', () => {
+    console.log('User disconnected');
+  });
+});
