@@ -12,7 +12,7 @@ function Chat({activeMessage , getMessages, messages, isLoading }){
 
 
   useEffect(() => {    
-    const newSocket = io('ws://localhost:3000');
+    const newSocket = io('https://chatapp-4xir.onrender.com');
     setSocket(newSocket);
     newSocket.on("message", () => {
       getMessages();  

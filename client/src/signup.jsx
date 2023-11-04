@@ -17,7 +17,7 @@ function Signup() {
       toast.error("Please enter a valid email address.");
       return;
     }
-    const response = await fetch("http://localhost:3000/api/auth/signup", 
+    const response = await fetch("https://chatapp-4xir.onrender.com/api/auth/signup", 
     {method: "POST", 
     headers: {"Content-Type": "application/json"}, 
     body: JSON.stringify(signup)})
