@@ -69,6 +69,7 @@ const server = app.listen(3000, function () {
 
 
 const io = require('socket.io')(server, {
+  pingTimeout: 60000, 
   cors: {
     origin: '*',
   }
@@ -218,7 +219,7 @@ io.on('connection', (socket) => {
   console.log('a user connected', socket.id);
   socket.on('message', (args) => {
     console.log('message',args)
-    io.emit('message');
+    socket.broadcast.emit('message');
 
   });
 });
