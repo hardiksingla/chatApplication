@@ -12,7 +12,7 @@ function Chat({activeMessage , getMessages, messages, isLoading }){
 
 
   useEffect(() => {    
-    const newSocket = io('https://chatapp-4xir.onrender.com');
+    const newSocket = io('ws://localhost:3000');
     setSocket(newSocket);
     newSocket.on("message", () => {
       getMessages();  
@@ -32,7 +32,8 @@ function Chat({activeMessage , getMessages, messages, isLoading }){
 
 
 
-  async function sendChat(){
+  async function sendChat(e){
+    e.preventDefault()
     if(messagesInput != ""){
     const data = {user:localStorage.getItem("token"),
       to:activeMessage.id,  
@@ -68,10 +69,10 @@ function Chat({activeMessage , getMessages, messages, isLoading }){
       <ol className="messages" ref={messagesListRef}>
         {messagesElement}
       </ol>
-      <div className="chatInput">
+      <form className="chatInput">
         <input type="text" value={messagesInput} onChange={(e) => setMessagesInput(e.target.value)} />
         <button onClick={sendChat}>Send</button> 
-      </div>   
+      </form>   
     </div>
     )
 }
