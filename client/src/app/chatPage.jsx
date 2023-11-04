@@ -21,6 +21,7 @@ function ChatPage() {
   }, [activeMessage]);
 
   async function getMessages(){
+    console.log("get message",activeMessage)
     const response = await fetch("https://chatapp-4xir.onrender.com/api/getMessages", 
     {method: "POST", 
     headers: {"Content-Type": "application/json"}, 
