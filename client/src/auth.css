@@ -28,7 +28,15 @@ body{
   align-items: center;
   justify-content: space-between;
   width: 100%;
-  margin: 1rem ;
+  margin: 1.5rem 0;
+}
+@media screen and (max-width: 600px) {
+  .container{
+    width: 70vw;
+  }
+  .input{
+    flex-direction: column;
+  }
 }
 
 .input input{
