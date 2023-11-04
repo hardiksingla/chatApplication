@@ -21,7 +21,7 @@ function ChatPage() {
   }, [activeMessage]);
 
   async function getMessages(){
-    const response = await fetch("http://localhost:3000/api/getMessages", 
+    const response = await fetch("https://chatapp-4xir.onrender.com/api/getMessages", 
     {method: "POST", 
     headers: {"Content-Type": "application/json"}, 
     body: JSON.stringify({userJWT:localStorage.getItem("token"),friendID:activeMessage.id})})
