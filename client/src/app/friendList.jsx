@@ -7,6 +7,7 @@ function FriendList({ getActiveMessage,activeMessage }) {
 
   useEffect(() => {
     async function getFriends() {
+      // const response = await fetch("http://localhost:3000/api/friendList", {
       const response = await fetch("https://chatapp-4xir.onrender.com/api/friendList", {
       method: "POST",
       headers: { "Content-Type": "application/json" },

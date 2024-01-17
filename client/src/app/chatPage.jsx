@@ -16,19 +16,29 @@ function ChatPage() {
     // getMessages();
   }
   useEffect(() => {
+    let didCancel = false;
     console.log("useEffect")
-    getMessages();
+    getMessages(didCancel);
+    return () => { didCancel = true; }
   }, [activeMessage]);
 
-  async function getMessages(){
-    console.log("get message",activeMessage)
+  
+
+  async function getMessages(didcancel){
+    console.log("get message zxdetyfcgvuhbinjo",activeMessage,didcancel)
+    // const response = await fetch("http://localhost:3000/api/getMessages", 
     const response = await fetch("https://chatapp-4xir.onrender.com/api/getMessages", 
     {method: "POST", 
     headers: {"Content-Type": "application/json"}, 
     body: JSON.stringify({userJWT:localStorage.getItem("token"),friendID:activeMessage.id})})
     var res = await response.json();
-    console.log(res)
-    setMessages(res.messages)
+    if(!didcancel){
+      console.log(res)
+      console.log("setMessageschatpage")
+      setMessages(res.messages)
+    }else{
+      console.log("true")
+    }
     setIsLoading(false)
   }
 

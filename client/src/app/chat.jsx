@@ -5,6 +5,7 @@ import { io } from "socket.io-client";
 function Chat({activeMessage , getMessages, messages, isLoading }){
   const [messagesInput, setMessagesInput] = useState("")
   const [socket, setSocket] = useState(null);
+  const [test, setTest] = useState(0)
 
 
   const messagesEndRef = useRef(null);
@@ -12,12 +13,26 @@ function Chat({activeMessage , getMessages, messages, isLoading }){
 
 
   useEffect(() => {    
-    const newSocket = io('https://chatapp-4xir.onrender.com');
+    let didCancel = false;
+    const newSocket = io('http://localhost:3000');
+    // const newSocket = io('https://chatapp-4xir.onrender.com');
     setSocket(newSocket);
-    newSocket.on("message", () => {
-      getMessages();  
-    });
+    newSocket.on("message", (res) => {
+      console.log("socket active message" , activeMessage)
+      // getMessages(didCancel);
+      setTest(prevTest => prevTest + 1)
+      console.log(test)
+      });
+    return () => { 
+      didCancel = true;
+      newSocket.close();
+      console.log("socket closed")
+      }
   }, []);
+  useEffect(() => {
+    console.log("test")
+    getMessages();
+  }, [test]);
 
   useEffect(() => {
     scrollToBottom();
@@ -33,6 +48,7 @@ function Chat({activeMessage , getMessages, messages, isLoading }){
 
 
   async function sendChat(e){
+    let didCancel = false;
     e.preventDefault()
     if(messagesInput != ""){
     const data = {user:localStorage.getItem("token"),
@@ -41,16 +57,18 @@ function Chat({activeMessage , getMessages, messages, isLoading }){
       }
       console.log(data)
 
+      // const response = await fetch("http://localhost:3000/api/sendMessage", 
       const response = await fetch("https://chatapp-4xir.onrender.com/api/sendMessage", 
       {method: "POST", 
       headers: {"Content-Type": "application/json"}, 
       body: JSON.stringify(data)})
       var res = await response.json();
       console.log(res)
-      getMessages();
+      getMessages(didCancel);
       setMessagesInput("")
       console.log("socket" ,socket)
-      socket.emit('message', 'world');
+      socket.emit('message', activeMessage.name);
+      return () => { didCancel = true; }
     }
   }
   var messagesElement = <div></div>;
@@ -73,6 +91,7 @@ function Chat({activeMessage , getMessages, messages, isLoading }){
         <input type="text" value={messagesInput} onChange={(e) => setMessagesInput(e.target.value)} />
         <button onClick={sendChat}>Send</button> 
       </form>   
+
     </div>
     )
 }

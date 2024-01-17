@@ -9,6 +9,7 @@ function Login() {
   async function handleSubmit(e){
     e.preventDefault()
     console.log("hello client")
+    // const response = await fetch("http://localhost:3000/api/auth/login", 
     const response = await fetch("https://chatapp-4xir.onrender.com/api/auth/login", 
     {method: "POST", 
     headers: {"Content-Type": "application/json"}, 
