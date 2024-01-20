@@ -14,8 +14,8 @@ function Chat({activeMessage , getMessages, messages, isLoading }){
 
   useEffect(() => {    
     let didCancel = false;
-    const newSocket = io('http://localhost:3000');
-    // const newSocket = io('https://chatapp-4xir.onrender.com');
+    // const newSocket = io('http://localhost:3000');
+    const newSocket = io('https://chatapp-4xir.onrender.com');
     setSocket(newSocket);
     newSocket.on("message", (res) => {
       console.log("socket active message" , activeMessage)
