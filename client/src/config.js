@@ -1,3 +1,3 @@
-const SERVER_URL = 'http://localhost:3000'
+const SERVER_URL = 'https://chatapp-1sdj.onrender.com'
 
 export { SERVER_URL }
