@@ -13,7 +13,7 @@ This is a full-fledged chat application built using the MERN (MongoDB, Express.j
 - Encryption: Used for password encryption to ensure user data security
 
 ## Deployment
-The application is deployed and can be accessed [here](https://chatapp-1sdj.onrender.com).
+The application is deployed and can be accessed [here](https://chatapp-1sdj.onrender.com/signup).
 
 
 
