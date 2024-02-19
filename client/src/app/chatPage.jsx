@@ -3,7 +3,7 @@ import FriendList from './friendList'
 import AddFriendSearch from './addFriendSearch';
 import Chat from './chat'
 import './styles/chatPage.css'
-
+import { SERVER_URL } from '../config.js'
 function ChatPage() {
   const [activeMessage, setActiveMessage] = useState(0);
   const [messages, setMessages] = useState([]);
@@ -27,7 +27,7 @@ function ChatPage() {
   async function getMessages(didcancel){
     console.log("get message zxdetyfcgvuhbinjo",activeMessage,didcancel)
     // const response = await fetch("http://localhost:3000/api/getMessages", 
-    const response = await fetch("https://chatapp-4xir.onrender.com/api/getMessages", 
+    const response = await fetch(`${SERVER_URL}/api/getMessages`, 
     {method: "POST", 
     headers: {"Content-Type": "application/json"}, 
     body: JSON.stringify({userJWT:localStorage.getItem("token"),friendID:activeMessage.id})})

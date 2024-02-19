@@ -2,6 +2,7 @@ import { useState } from 'react'
 import './auth.css'
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import { SERVER_URL } from './config.js'
 
 function Signup() {
   const [signup, setSignup] = useState({  username: '', password: '', email: '', name: ''})
@@ -18,7 +19,7 @@ function Signup() {
       return;
     }
     // const response = await fetch("http://localhost:3000/api/auth/signup", 
-    const response = await fetch("https://chatapp-4xir.onrender.com/api/auth/signup", 
+    const response = await fetch(`${SERVER_URL}/api/auth/signup`, 
     {method: "POST", 
     headers: {"Content-Type": "application/json"}, 
     body: JSON.stringify(signup)})

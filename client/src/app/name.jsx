@@ -1,11 +1,12 @@
 import "./styles/names.css"
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import { SERVER_URL } from '../config.js'
 
 function Name(props){
   async function addFriend(){
     console.log(props.prop.username)
-    const response = await fetch("https://chatapp-4xir.onrender.com/api/addFriend",
+    const response = await fetch(`${SERVER_URL}/api/addFriend`,
     {method: "POST",
     headers: {"Content-Type": "application/json"},
     body: JSON.stringify({"friendID":props.prop._id,"currentUserID":localStorage.getItem("token")})})

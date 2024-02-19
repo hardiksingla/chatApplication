@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useRef } from 'react'
 import './styles/chat.css'
 import { io } from "socket.io-client";
-
+import { SERVER_URL } from '../config.js'
 function Chat({activeMessage , getMessages, messages, isLoading }){
   const [messagesInput, setMessagesInput] = useState("")
   const [socket, setSocket] = useState(null);
@@ -15,7 +15,7 @@ function Chat({activeMessage , getMessages, messages, isLoading }){
   useEffect(() => {    
     let didCancel = false;
     // const newSocket = io('http://localhost:3000');
-    const newSocket = io('https://chatapp-4xir.onrender.com');
+    const newSocket = io(SERVER_URL);
     setSocket(newSocket);
     newSocket.on("message", (res) => {
       console.log("socket active message" , activeMessage)
@@ -58,7 +58,7 @@ function Chat({activeMessage , getMessages, messages, isLoading }){
       console.log(data)
 
       // const response = await fetch("http://localhost:3000/api/sendMessage", 
-      const response = await fetch("https://chatapp-4xir.onrender.com/api/sendMessage", 
+      const response = await fetch(`${SERVER_URL}/api/sendMessage`, 
       {method: "POST", 
       headers: {"Content-Type": "application/json"}, 
       body: JSON.stringify(data)})

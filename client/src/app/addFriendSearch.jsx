@@ -2,7 +2,7 @@ import { useState,useEffect } from 'react'
 import "./styles/addFriendSearch.css"
 import Name from "./name.jsx"
 import { isExpired, decodeToken } from "react-jwt";
-
+import { SERVER_URL } from '../config.js'
 
 function AddFriendSearch(){
   const [search, setSearch] = useState("")
@@ -21,7 +21,7 @@ function AddFriendSearch(){
     e.preventDefault()
     const names = document.getElementById("names")
     names.style.display = names.style.display == "flex" ? "none" : "flex"
-    const response = await fetch("https://chatapp-4xir.onrender.com/api/search",
+    const response = await fetch(`${SERVER_URL}/api/api/search`,
     // const response = await fetch("http://localhost:3000/api/search",
     {method: "POST",
     headers: {"Content-Type": "application/json"},

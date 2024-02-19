@@ -2,15 +2,15 @@ import { useState } from 'react'
 import './auth.css'
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import { SERVER_URL } from './config.js'
+
 
 function Login() {
   const [login, setLogin] = useState({  username: '', password: ''})
     
   async function handleSubmit(e){
     e.preventDefault()
-    console.log("hello client")
-    // const response = await fetch("http://localhost:3000/api/auth/login", 
-    const response = await fetch("https://chatapp-4xir.onrender.com/api/auth/login", 
+    const response = await fetch(`${SERVER_URL}/api/auth/login`, 
     {method: "POST", 
     headers: {"Content-Type": "application/json"}, 
     body: JSON.stringify(login)})
