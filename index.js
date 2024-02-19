@@ -206,6 +206,9 @@ app.post("/api/sendMessage", async function(req,res){
   res.json({ status: 'ok' })
 
 })
+app.get("/api/healthcheck", function(req,res){
+  res.json({ status: 'ok' })
+})
 
 
 // socket.io->>
