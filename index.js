@@ -8,19 +8,14 @@ var jwt = require('jsonwebtoken');
 const { Server } = require('socket.io');
 const { createServer } = require('http');
 const path = require("path");
+require('dotenv').config()
 
 
 
-
-// main().catch(err => console.log("database error"));
-
-// async function main() {
-//   await mongoose.connect('mongodb+srv://07hardiksingla:<password>@chatapp.1bf5kn1.mongodb.net/?retryWrites=true&w=majority');
-//   console.log("connected to database")
-//   }
 const connectDB = async () => {
   try {
-    const conn = await mongoose.connect('mongodb+srv://07hardiksingla:ZXfFpkmowON7tg76@chatapp.1bf5kn1.mongodb.net/?retryWrites=true&w=majority', {
+    
+    const conn = await mongoose.connect(process.env.MONGO_URI, {
       useNewUrlParser: true,
       useUnifiedTopology: true,
     });
