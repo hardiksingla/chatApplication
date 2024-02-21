@@ -46,7 +46,11 @@ const __dirname1 = path.resolve();
 console.log(__dirname1)
 if ("production" === "production") {
   app.use(express.static(path.join(__dirname1, "/client/dist")));
-
+  
+  app.get("/api/healthcheck", function(req,res){
+    res.json({ status: 'ok' })
+  
+  })
   app.get("*", (req, res) =>
     res.sendFile(path.resolve(__dirname1, "client", "dist", "index.html"))
   );
@@ -206,9 +210,7 @@ app.post("/api/sendMessage", async function(req,res){
   res.json({ status: 'ok' })
 
 })
-app.get("/api/healthcheck", function(req,res){
-  res.json({ status: 'ok' })
-})
+
 
 
 // socket.io->>
