@@ -1,6 +1,7 @@
 # Chat Application
 
 This is a full-fledged chat application built using the MERN (MongoDB, Express.js, React.js, Node.js) stack. It features real-time communication using WebSockets and incorporates additional technologies such as React Toastify for notifications, JSON Web Tokens for authentication, and password encryption for enhanced security.
+[video demo](https://youtu.be/1LYbz3xcsBU)
 
 ## Technologies Used
 - MongoDB: Database for storing chat messages and user information
